@@ -15,10 +15,11 @@ npm install picscout
 Here's an example of how to use the package in your code:
 
 ```javascript
-const PicScout = require('picscout');
+const PicScout = require('picscout').default;
 
 (async () => {
   const res = await PicScout.search('cats');
+  console.log(res);
 })();
 ```
 
