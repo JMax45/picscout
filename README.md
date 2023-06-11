@@ -1,5 +1,7 @@
 # PicScout
 
+[![codecov](https://codecov.io/gh/JMax45/picscout/branch/master/graph/badge.svg?token=6HK7W42XCV)](https://codecov.io/gh/JMax45/picscout)
+
 PicScout is an NPM module that allows you to search for images using Google Image Search. It provides the same functionality as [g-i-s](https://github.com/jimkang/g-i-s) by Jim Kang, in fact the starting code is from his module.
 
 ## Installation
