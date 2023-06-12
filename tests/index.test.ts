@@ -31,4 +31,25 @@ describe('Test PicScout', () => {
       expect(searchParams.get('safe')).toBe('on');
     });
   });
+  it('Test "additionalQueryParams" option', async () => {
+    const mockMethod = jest.fn(axiosGet);
+    PicScout._axiosGet = mockMethod;
+
+    // This should produce a URL like this:
+    // http://images.google.com/search?tbm=isch&q=cats&testparam=test
+    const urlParams = new URLSearchParams();
+    urlParams.set('testparam', 'test');
+
+    return PicScout.search('cats', {
+      additionalQueryParams: urlParams,
+    }).then(() => {
+      expect(mockMethod).toHaveBeenCalledTimes(1);
+      const [param1] = mockMethod.mock.calls[0];
+
+      const parsedUrl = new URL(param1);
+      const { searchParams } = parsedUrl;
+
+      expect(searchParams.get('testparam')).toBe('test');
+    });
+  });
 });

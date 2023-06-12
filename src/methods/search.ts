@@ -12,6 +12,7 @@ const containsImageExtension = (s: string) =>
 interface additionalParams {
   userAgent?: string;
   safe?: boolean;
+  additionalQueryParams?: URLSearchParams;
 }
 
 const search = async (
@@ -26,6 +27,10 @@ const search = async (
   if (additionalParams?.safe || ctx.safe) {
     urlParams.set('safe', 'on');
   }
+  if (additionalParams?.additionalQueryParams)
+    additionalParams.additionalQueryParams.forEach((val, key) =>
+      urlParams.set(key, val)
+    );
 
   const url = new URL(BASE_URL);
   url.search = urlParams.toString();
