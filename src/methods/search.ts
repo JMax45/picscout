@@ -1,4 +1,3 @@
-import axios from 'axios';
 import * as cheerio from 'cheerio';
 import flatten from 'lodash.flatten';
 import collectImageRefs from './collectImageRefs';
@@ -12,6 +11,7 @@ const containsImageExtension = (s: string) =>
 
 interface additionalParams {
   userAgent?: string;
+  safe?: boolean;
 }
 
 const search = async (
@@ -23,10 +23,14 @@ const search = async (
   urlParams.set('tbm', 'isch');
   urlParams.set('q', query);
 
+  if (additionalParams?.safe || ctx.safe) {
+    urlParams.set('safe', 'on');
+  }
+
   const url = new URL(BASE_URL);
   url.search = urlParams.toString();
 
-  const res = await axios.get(url.href, {
+  const res = await ctx._axiosGet(url.href, {
     headers: {
       'User-Agent':
         additionalParams?.userAgent || ctx.userAgent || getRandomUa(),
