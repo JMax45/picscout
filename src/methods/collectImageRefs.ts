@@ -1,10 +1,11 @@
 import IMAGE_EXTENSIONS from '../constants/IMAGE_EXTENSIONS';
+import PicScoutRes from '../interfaces/PicScoutRes';
 import isValidUrl from './isValidUrl';
 
 const EXTENSION_REGEX = new RegExp(`(${IMAGE_EXTENSIONS.join('|')})$`, 'i');
 
-const collectImageRefs = (content: any) => {
-  const refs = [];
+const collectImageRefs = (content: string) => {
+  const refs: PicScoutRes[] = [];
   const regex = /\["(http.+?)",(\d+),(\d+)\]/g;
   let result;
   while ((result = regex.exec(content)) !== null) {

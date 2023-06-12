@@ -1,25 +1,21 @@
+import PicScoutRes from './interfaces/PicScoutRes';
 import axiosGet from './methods/axiosGet';
-import search, { additionalParams } from './methods/search';
+import search from './methods/search';
 
 interface PicScout {
   search: (
-    query: string,
-    additionalParams?: additionalParams
-  ) => Promise<
-    {
-      url: string;
-      width: number;
-      height: number;
-    }[]
-  >;
+    ...args: Parameters<typeof search> extends [any, ...infer RestParams]
+      ? RestParams
+      : never
+  ) => Promise<PicScoutRes[]>;
   userAgent?: string;
   safe?: boolean;
   _axiosGet: typeof axiosGet;
 }
 
 const PicScout: PicScout = {
-  search: (query: string, additionalParams?: additionalParams) =>
-    search(PicScout, query, additionalParams),
+  search: (...args: Parameters<PicScout['search']>) =>
+    search(PicScout, ...args),
   userAgent: undefined,
   safe: false,
   _axiosGet: axiosGet,
