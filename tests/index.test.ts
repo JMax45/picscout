@@ -1,22 +1,36 @@
 import PicScout from '../src/index';
+import Engine from '../src/interfaces/Engine';
 import axiosGet from '../src/methods/axiosGet';
+import search from '../src/methods/search';
 
 describe('Test PicScout', () => {
-  it('Test search method', async () => {
-    return PicScout.search('cats').then((res) => {
-      expect(res.length).toBeGreaterThan(0);
+  it.each(['google', 'bing'] as Array<Engine>)(
+    'Test search method with engine: "%s"',
+    async (engine) => {
+      const mockMethod = jest.fn(search);
+      PicScout.search = (...args) => mockMethod(PicScout, ...args);
+      return PicScout.search('cats', {
+        engine,
+      }).then((res) => {
+        expect(mockMethod).toHaveBeenCalledTimes(1);
+        const additionalParams = mockMethod.mock.calls[0][2];
+        expect(additionalParams).not.toBeUndefined();
+        expect(additionalParams?.engine).toBe(engine);
 
-      res.forEach((obj) => {
-        expect(typeof obj).toBe('object');
-        expect(obj).toHaveProperty('url');
-        expect(typeof (obj as any).url).toBe('string');
-        expect(obj).toHaveProperty('width');
-        expect(typeof (obj as any).width).toBe('number');
-        expect(obj).toHaveProperty('height');
-        expect(typeof (obj as any).height).toBe('number');
+        expect(res.length).toBeGreaterThan(0);
+
+        res.forEach((obj) => {
+          expect(typeof obj).toBe('object');
+          expect(obj).toHaveProperty('url');
+          expect(typeof (obj as any).url).toBe('string');
+          expect(obj).toHaveProperty('width');
+          expect(typeof (obj as any).width).toBe('number');
+          expect(obj).toHaveProperty('height');
+          expect(typeof (obj as any).height).toBe('number');
+        });
       });
-    });
-  });
+    }
+  );
   it('Test "safe" option', async () => {
     const mockMethod = jest.fn(axiosGet);
     PicScout._axiosGet = mockMethod;

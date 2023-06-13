@@ -5,6 +5,9 @@ import PicScout from '../PicScout';
 import getRandomUa from './getRandomUa';
 import IMAGE_EXTENSIONS from '../constants/IMAGE_EXTENSIONS';
 import BASE_URL from '../constants/BASE_URL';
+import Engine from '../interfaces/Engine';
+import PicScoutRes from '../interfaces/PicScoutRes';
+import BING_BASE_URL from '../constants/BING_BASE_URL';
 
 const containsImageExtension = (s: string) =>
   IMAGE_EXTENSIONS.some((ext) => s.toLowerCase().includes(ext));
@@ -13,13 +16,11 @@ interface additionalParams {
   userAgent?: string;
   safe?: boolean;
   additionalQueryParams?: URLSearchParams;
+  engine?: Engine;
 }
 
-const search = async (
-  ctx: typeof PicScout,
-  query: string,
-  additionalParams?: additionalParams
-) => {
+const googleSearch = async (...args: Parameters<typeof search>) => {
+  const [ctx, query, additionalParams] = args;
   const urlParams = new URLSearchParams();
   urlParams.set('tbm', 'isch');
   urlParams.set('q', query);
@@ -56,6 +57,63 @@ const search = async (
   }
 
   return flatten(scriptContents.map(collectImageRefs));
+};
+
+const bingSearch = async (...args: Parameters<typeof search>) => {
+  const [ctx, query, additionalParams] = args;
+  const urlParams = new URLSearchParams();
+  urlParams.set('q', query);
+
+  if (additionalParams?.additionalQueryParams)
+    additionalParams.additionalQueryParams.forEach((val, key) =>
+      urlParams.set(key, val)
+    );
+
+  const url = new URL(BING_BASE_URL);
+  url.search = urlParams.toString();
+
+  const res = await ctx._axiosGet(url.href, {
+    headers: {
+      'User-Agent':
+        additionalParams?.userAgent || ctx.userAgent || getRandomUa(),
+    },
+  });
+
+  const body = res.data;
+  const $ = cheerio.load(body);
+  const images = $('a.iusc');
+  const imagesContents: PicScoutRes[] = [];
+  for (let i = 0; i < images.length; i++) {
+    try {
+      const parsed = JSON.parse(images[i].attribs.m);
+      const parsedUrl = new URL(BING_BASE_URL + images[i].attribs.href);
+      const { searchParams } = parsedUrl;
+      imagesContents.push({
+        url: parsed.murl,
+        width: parseInt(searchParams.get('expw') || '0'),
+        height: parseInt(searchParams.get('exph') || '0'),
+      });
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+  return imagesContents;
+};
+
+const search = async (
+  ctx: typeof PicScout,
+  query: string,
+  additionalParams?: additionalParams
+): Promise<PicScoutRes[]> => {
+  const engine = additionalParams?.engine || ctx.engine;
+  switch (engine) {
+    case 'google':
+      return googleSearch(ctx, query, additionalParams);
+    case 'bing':
+      return bingSearch(ctx, query, additionalParams);
+    default:
+      return googleSearch(ctx, query, additionalParams);
+  }
 };
 
 export default search;
