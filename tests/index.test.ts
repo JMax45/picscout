@@ -31,7 +31,7 @@ describe('Test PicScout', () => {
       });
     }
   );
-  it('Test "safe" option', async () => {
+  it('Test "safe" option with "google" engine', async () => {
     const mockMethod = jest.fn(axiosGet);
     PicScout._axiosGet = mockMethod;
 
@@ -43,6 +43,21 @@ describe('Test PicScout', () => {
       const { searchParams } = parsedUrl;
 
       expect(searchParams.get('safe')).toBe('on');
+    });
+  });
+  it('Test "safe" option with "bing" engine', async () => {
+    const mockMethod = jest.fn(axiosGet);
+    PicScout._axiosGet = mockMethod;
+
+    return PicScout.search('cats', { safe: true, engine: 'bing' }).then(() => {
+      expect(mockMethod).toHaveBeenCalledTimes(1);
+      const [_param1, param2] = mockMethod.mock.calls[0];
+
+      expect(param2).not.toBeUndefined();
+      if (!param2 || !param2.headers)
+        return fail('param2 or param2.headers undefined');
+
+      expect(param2.headers.Cookie).toContain('SRCHHPGUSR=ADLT=DEMOTE');
     });
   });
   it('Test "additionalQueryParams" option', async () => {

@@ -76,6 +76,9 @@ const bingSearch = async (...args: Parameters<typeof search>) => {
     headers: {
       'User-Agent':
         additionalParams?.userAgent || ctx.userAgent || getRandomUa(),
+      ...(additionalParams?.safe || ctx.safe
+        ? { Cookie: 'SRCHHPGUSR=ADLT=DEMOTE;' }
+        : { Cookie: 'SRCHHPGUSR=ADLT=OFF;' }),
     },
   });
 
@@ -93,9 +96,7 @@ const bingSearch = async (...args: Parameters<typeof search>) => {
         width: parseInt(searchParams.get('expw') || '0'),
         height: parseInt(searchParams.get('exph') || '0'),
       });
-    } catch (err) {
-      console.warn(err);
-    }
+    } catch (err) {}
   }
   return imagesContents;
 };
