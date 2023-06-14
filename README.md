@@ -104,6 +104,30 @@ const PicScout = require('picscout').default;
 
 In the above example, the search request will include an additional query parameter `testparam` with the value `'test'`. You can customize the additional query parameters as needed.
 
+#### Global Parameters
+
+The PicScout instance allows you to define some of the parameters globally, which will be used as defaults for the `search` method. However, if you specify a parameter in the method call, it will take precedence over the global value. Here are the available global parameters:
+
+- `userAgent` (if not defined, a random one will be generated for each call)
+- `safe` (default: `false`)
+- `engine` (default: `'google'`)
+
+For example, to set the global `safe` parameter to `true` and the `engine` parameter to `'bing'`, you can do the following:
+
+```javascript
+const PicScout = require('picscout').default;
+
+PicScout.safe = true;
+PicScout.engine = 'bing';
+
+(async () => {
+  const res = await PicScout.search('cats');
+  console.log(res);
+})();
+```
+
+In the above example, the search will be performed with safe search enabled and using the Bing search engine. If you pass a different value for any of these parameters in the method call, it will override the global setting.
+
 ## Acknowledgments
 
 This package started off based on the [g-i-s](https://github.com/jimkang/g-i-s) package by Jim Kang. Please check it out as well.
