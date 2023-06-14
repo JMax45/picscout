@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/JMax45/picscout/branch/master/graph/badge.svg?token=6HK7W42XCV)](https://codecov.io/gh/JMax45/picscout)
 
-PicScout is an NPM module that allows you to search for images using Google Image Search. It provides the same functionality as [g-i-s](https://github.com/jimkang/g-i-s) by Jim Kang, in fact the starting code is from their module.
+PicScout is an NPM module that allows you to search for images using various search engines, currently included ones are Google and Bing.
 
 ## Installation
 
@@ -47,11 +47,26 @@ Output:
 ]
 ```
 
-**The returned URLs are not guaranteed to work 100% of the times, some of the URLs might be broken**
+**Note: The returned URLs are not guaranteed to work 100% of the time, some of the URLs might be broken.**
 
 ### Additional Options
 
 The `search` method of PicScout supports additional options for more control over the search behavior.
+
+#### Search Engine Option
+
+You can specify the search engine to be used by passing the `engine` option with the desired value, such as `'google'` or `'bing'`:
+
+```javascript
+const PicScout = require('picscout').default;
+
+(async () => {
+  const res = await PicScout.search('cats', { engine: 'bing' });
+  console.log(res);
+})();
+```
+
+In the above example, the search will be performed using the Bing search engine. The default engine is 'google'.
 
 #### Safe Search Option
 
@@ -91,4 +106,4 @@ In the above example, the search request will include an additional query parame
 
 ## Acknowledgments
 
-This package is based on the [g-i-s](https://github.com/jimkang/g-i-s) package by Jim Kang. Please check it out as well.
+This package started off based on the [g-i-s](https://github.com/jimkang/g-i-s) package by Jim Kang. Please check it out as well.
