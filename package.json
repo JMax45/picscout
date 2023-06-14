@@ -1,6 +1,6 @@
 {
   "name": "picscout",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Search for images using Google Image Search",
   "main": "./lib/index.js",
   "scripts": {
