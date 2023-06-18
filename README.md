@@ -1,6 +1,7 @@
 # PicScout
 
 [![codecov](https://codecov.io/gh/JMax45/picscout/branch/master/graph/badge.svg?token=6HK7W42XCV)](https://codecov.io/gh/JMax45/picscout)
+[![npm](https://img.shields.io/npm/v/picscout?logo=npm)](https://www.npmjs.com/package/picscout)
 
 PicScout is an NPM module that allows you to search for images using various search engines, currently included ones are Google and Bing.
 
