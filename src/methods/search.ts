@@ -8,6 +8,7 @@ import BASE_URL from '../constants/BASE_URL';
 import Engine from '../interfaces/Engine';
 import PicScoutRes from '../interfaces/PicScoutRes';
 import BING_BASE_URL from '../constants/BING_BASE_URL';
+import DUCK_DUCK_GO_BASE_URL from '../constants/DUCK_DUCK_GO_BASE_URL';
 
 const containsImageExtension = (s: string) =>
   IMAGE_EXTENSIONS.some((ext) => s.toLowerCase().includes(ext));
@@ -101,6 +102,64 @@ const bingSearch = async (...args: Parameters<typeof search>) => {
   return imagesContents;
 };
 
+const duckDuckGoSearch = async (...args: Parameters<typeof search>) => {
+  const [ctx, query, additionalParams] = args;
+  let urlParams = new URLSearchParams();
+  urlParams.set('q', query);
+  urlParams.set('iax', 'images');
+  urlParams.set('ia', 'images');
+
+  if (additionalParams?.additionalQueryParams)
+    additionalParams.additionalQueryParams.forEach((val, key) =>
+      urlParams.set(key, val)
+    );
+
+  let url = new URL(DUCK_DUCK_GO_BASE_URL);
+  url.search = urlParams.toString();
+
+  // First we need to extract the "vqd"
+  let res = await ctx._axiosGet(url.href, {
+    headers: {
+      'User-Agent':
+        additionalParams?.userAgent || ctx.userAgent || getRandomUa(),
+      ...(additionalParams?.safe || ctx.safe ? {} : {}),
+    },
+  });
+
+  const vqdRegex = /vqd="([^"]+)"/;
+  const match = res.data.toString().match(vqdRegex);
+  const vqdValue = match ? match[1] : null;
+  if (!vqdValue) throw new Error('Failed to extract vqd');
+
+  url = new URL(DUCK_DUCK_GO_BASE_URL);
+  url.pathname = '/i.js';
+  urlParams = new URLSearchParams();
+  urlParams.set('o', 'json');
+  urlParams.set('q', query);
+  urlParams.set('vqd', vqdValue);
+  urlParams.set('f', ',,,,,');
+  urlParams.set('p', '1');
+  if (additionalParams?.additionalQueryParams)
+    additionalParams.additionalQueryParams.forEach((val, key) =>
+      urlParams.set(key, val)
+    );
+  url.search = urlParams.toString();
+
+  res = await ctx._axiosGet(url.href, {
+    headers: {
+      'User-Agent':
+        additionalParams?.userAgent || ctx.userAgent || getRandomUa(),
+      ...(additionalParams?.safe || ctx.safe ? {} : {}),
+    },
+  });
+
+  return res.data.results.map((e: any) => ({
+    url: e.image,
+    width: e.width,
+    height: e.height,
+  }));
+};
+
 const search = async (
   ctx: typeof PicScout,
   query: string,
@@ -112,6 +171,8 @@ const search = async (
       return googleSearch(ctx, query, additionalParams);
     case 'bing':
       return bingSearch(ctx, query, additionalParams);
+    case 'duckduckgo':
+      return duckDuckGoSearch(ctx, query, additionalParams);
     default:
       return googleSearch(ctx, query, additionalParams);
   }

@@ -1,3 +1,3 @@
-type Engine = 'google' | 'bing';
+type Engine = 'google' | 'bing' | 'duckduckgo';
 
 export default Engine;

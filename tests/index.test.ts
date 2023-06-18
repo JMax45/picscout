@@ -4,7 +4,7 @@ import axiosGet from '../src/methods/axiosGet';
 import search from '../src/methods/search';
 
 describe('Test PicScout', () => {
-  it.each(['google', 'bing'] as Array<Engine>)(
+  it.each(['google', 'bing', 'duckduckgo'] as Array<Engine>)(
     'Test search method with engine: "%s"',
     async (engine) => {
       const mockMethod = jest.fn(search);
