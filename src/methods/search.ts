@@ -109,6 +109,12 @@ const duckDuckGoSearch = async (...args: Parameters<typeof search>) => {
   urlParams.set('iax', 'images');
   urlParams.set('ia', 'images');
 
+  if (additionalParams?.safe || ctx.safe) {
+    urlParams.set('p', '1');
+  } else {
+    urlParams.set('p', '-1');
+  }
+
   if (additionalParams?.additionalQueryParams)
     additionalParams.additionalQueryParams.forEach((val, key) =>
       urlParams.set(key, val)
@@ -138,7 +144,13 @@ const duckDuckGoSearch = async (...args: Parameters<typeof search>) => {
   urlParams.set('q', query);
   urlParams.set('vqd', vqdValue);
   urlParams.set('f', ',,,,,');
-  urlParams.set('p', '1');
+
+  if (additionalParams?.safe || ctx.safe) {
+    urlParams.set('p', '1');
+  } else {
+    urlParams.set('p', '-1');
+  }
+
   if (additionalParams?.additionalQueryParams)
     additionalParams.additionalQueryParams.forEach((val, key) =>
       urlParams.set(key, val)

@@ -60,6 +60,23 @@ describe('Test PicScout', () => {
       expect(param2.headers.Cookie).toContain('SRCHHPGUSR=ADLT=DEMOTE');
     });
   });
+  it('Test "safe" option with "duckduckgo" engine', async () => {
+    const mockMethod = jest.fn(axiosGet);
+    PicScout._axiosGet = mockMethod;
+
+    return PicScout.search('cats', { safe: true, engine: 'duckduckgo' }).then(
+      () => {
+        // 2 times because we first make a request to extract the vqd token
+        expect(mockMethod).toHaveBeenCalledTimes(2);
+        const [param1] = mockMethod.mock.calls[0];
+
+        const parsedUrl = new URL(param1);
+        const { searchParams } = parsedUrl;
+
+        expect(searchParams.get('p')).toBe('1');
+      }
+    );
+  });
   it('Test "additionalQueryParams" option', async () => {
     const mockMethod = jest.fn(axiosGet);
     PicScout._axiosGet = mockMethod;
