@@ -1,7 +1,7 @@
 {
   "name": "picscout",
   "version": "1.2.0",
-  "description": "Search for images using Google Image Search",
+  "description": "Search for images using Google, Bing and DuckDuckGo",
   "main": "./lib/index.js",
   "scripts": {
     "test": "npm run build && jest",
@@ -14,7 +14,9 @@
   "keywords": [
     "google",
     "image",
-    "search"
+    "search",
+    "bing",
+    "duckduckgo"
   ],
   "author": "JMax45",
   "license": "MIT",
