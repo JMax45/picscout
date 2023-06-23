@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/picscout?logo=npm)](https://www.npmjs.com/package/picscout)
 [![codecov](https://codecov.io/gh/JMax45/picscout/branch/master/graph/badge.svg?token=6HK7W42XCV)](https://codecov.io/gh/JMax45/picscout)
 
-PicScout is an NPM module that allows you to search for images using various search engines, currently included ones are Google and Bing.
+PicScout is an NPM module that allows you to search for images using various search engines, currently included ones are Google, Bing and DuckDuckGo.
 
 ## Installation
 
@@ -56,7 +56,7 @@ The `search` method of PicScout supports additional options for more control ove
 
 #### Search Engine Option
 
-You can specify the search engine to be used by passing the `engine` option with the desired value, such as `'google'` or `'bing'`:
+You can specify the search engine to be used by passing the `engine` option with the desired value, such as `'google'`, `'bing'` or `'duckduckgo'`:
 
 ```javascript
 const PicScout = require('picscout').default;
