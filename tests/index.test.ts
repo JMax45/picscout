@@ -1,23 +1,39 @@
+import BASE_URL from '../src/constants/BASE_URL';
+import BING_BASE_URL from '../src/constants/BING_BASE_URL';
+import DUCK_DUCK_GO_BASE_URL from '../src/constants/DUCK_DUCK_GO_BASE_URL';
 import PicScout from '../src/index';
 import Engine from '../src/interfaces/Engine';
 import axiosGet from '../src/methods/axiosGet';
 import search from '../src/methods/search';
+import isSameDomain from '../src/methods/isSameDomain';
+
+const engines: { engine: Engine; domain: string }[] = [
+  { engine: 'google', domain: BASE_URL },
+  { engine: 'bing', domain: BING_BASE_URL },
+  { engine: 'duckduckgo', domain: DUCK_DUCK_GO_BASE_URL },
+];
 
 describe('Test PicScout', () => {
-  it.each(['google', 'bing', 'duckduckgo'] as Array<Engine>)(
-    'Test search method with engine: "%s"',
-    async (engine) => {
+  it.each(engines)(
+    'Test search method with engine: "$engine"',
+    async (element) => {
       const mockMethod = jest.fn(search);
       PicScout.search = (...args) => mockMethod(PicScout, ...args);
+      const mockAxiosMethod = jest.fn(PicScout._axiosGet);
+      PicScout._axiosGet = mockAxiosMethod;
+      const { engine, domain } = element;
       return PicScout.search('cats', {
         engine,
       }).then((res) => {
+        expect(res.length).toBeGreaterThan(0);
+
         expect(mockMethod).toHaveBeenCalledTimes(1);
         const additionalParams = mockMethod.mock.calls[0][2];
         expect(additionalParams).not.toBeUndefined();
         expect(additionalParams?.engine).toBe(engine);
 
-        expect(res.length).toBeGreaterThan(0);
+        const [axiosUrl] = mockAxiosMethod.mock.calls[0];
+        expect(isSameDomain(axiosUrl, domain)).toBe(true);
 
         res.forEach((obj) => {
           expect(typeof obj).toBe('object');
